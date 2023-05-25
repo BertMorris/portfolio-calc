@@ -1,10 +1,14 @@
 "use client";
 
 import {
+  Button,
   FilledInput,
   FormControl,
   InputAdornment,
   InputLabel,
+  List,
+  ListItem,
+  OutlinedInput,
   TextField,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -13,10 +17,34 @@ import React, { useState } from "react";
 
 type Props = {};
 
+type Ticker = string | null;
+type Weight = number | null;
+
+type StockWeight = {
+  ticker: Ticker;
+  weight: Weight;
+};
+
 export default function page({}: Props) {
-  const [date, setDate] = useState<null>(null);
+  const [date, setDate] = useState<Date | null>(null);
   const [amount, setAmount] = useState<number | null>(null);
-  const [tickers, setTickers] = useState<string[] | null>(null);
+  const [tickers, setTickers] = useState<StockWeight[]>([
+    { ticker: "testing", weight: 30 },
+  ]);
+
+  // check if ticker input is valid
+  function tickerIsValid(ticker: Ticker) {
+    if (ticker && ticker.length < 1) {
+      return false;
+    } else return true;
+  }
+
+  // check is weighting input is valid
+  function weightIsValid(weight: Weight) {
+    if (weight && weight > 100) {
+      return false;
+    } else return true;
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -26,73 +54,84 @@ export default function page({}: Props) {
         and their weighting
       </p>
       <form>
-        <FormControl fullWidth sx={{ m: 1 }} variant="outlines">
+        <FormControl sx={{ m: 1 }} variant="outlined">
           <InputLabel htmlFor="filled-adornment-amount">
             Starting Investment
           </InputLabel>
-          <FilledInput
+          <OutlinedInput
             id="filled-adornment-amount"
             startAdornment={<InputAdornment position="start">$</InputAdornment>}
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
+            required
           />
         </FormControl>
         <DatePicker
           label="Investment Date"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={(newDate) => setDate(newDate)}
         />
-        <div>
-          <TextField id="ticker" label="Ticker" variant="outlined" />
-          <TextField
-            type="number"
-            id="weight"
-            label="Weighting"
-            variant="outlined"
-            // inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-          />
-        </div>
-        <div>
-          <TextField id="ticker" label="Ticker" variant="outlined" />
-          <TextField
-            type="number"
-            id="weight"
-            label="Weighting"
-            variant="outlined"
-            // inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-          />
-        </div>
-        <div>
-          <TextField id="ticker" label="Ticker" variant="outlined" />
-          <TextField
-            type="number"
-            id="weight"
-            label="Weighting"
-            variant="outlined"
-            // inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-          />
-        </div>
-        <div>
-          <TextField id="ticker" label="Ticker" variant="outlined" />
-          <TextField
-            type="number"
-            id="weight"
-            label="Weighting"
-            variant="outlined"
-            // inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-          />
-        </div>
-        <div>
-          <TextField id="ticker" label="Ticker" variant="outlined" />
-          <TextField
-            type="number"
-            id="weight"
-            label="Weighting"
-            variant="outlined"
-            // inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-          />
-        </div>
+        <List>
+          {tickers.map((item: StockWeight, tickerIndex) => (
+            <ListItem key={tickerIndex}>
+              <TextField
+                id="ticker"
+                label="Ticker"
+                variant="outlined"
+                error={!tickerIsValid(item.ticker)}
+                helperText="Invalid ticker"
+                value={item.ticker}
+                onChange={(e) =>
+                  setTickers(
+                    tickers.map((item: StockWeight, index) =>
+                      index === tickerIndex
+                        ? { ...item, ticker: e.target.value }
+                        : item
+                    )
+                  )
+                }
+                required
+              />
+              <TextField
+                type="number"
+                id="weight"
+                label="Weighting"
+                variant="outlined"
+                error={!weightIsValid(item.weight)}
+                helperText="Max 100%"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">%</InputAdornment>
+                  ),
+                }}
+                value={item.weight}
+                onChange={(e) =>
+                  setTickers(
+                    tickers.map((item: StockWeight, index) =>
+                      index === tickerIndex
+                        ? { ...item, weight: Number(e.target.value) }
+                        : item
+                    )
+                  )
+                }
+                required
+              />
+            </ListItem>
+          ))}
+        </List>
       </form>
+      {tickers.length < 5 ? (
+        <Button
+          variant="contained"
+          onClick={() =>
+            setTickers([...tickers, { ticker: null, weight: null }])
+          }
+        >
+          Add Stock
+        </Button>
+      ) : (
+        <p>Maximum input reached</p>
+      )}
     </LocalizationProvider>
   );
 }
