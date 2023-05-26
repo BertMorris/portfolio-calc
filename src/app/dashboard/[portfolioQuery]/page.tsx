@@ -2,6 +2,7 @@ import { colors } from "@mui/material";
 import { timePickerToolbarClasses } from "@mui/x-date-pickers";
 import React from "react";
 import { StringLiteral } from "typescript";
+import Chart from "./Chart";
 
 type Props = {
   params: { portfolioQuery: any };
@@ -113,6 +114,9 @@ export default async function page({ params }: Props) {
       <h3>Symbols: {symbols}</h3>
       <h3>DateFrom: {dateFrom}</h3>
       <p>Data: {JSON.stringify(chartData)}</p>
+      <div className="h-96">
+        <Chart data={chartData} />
+      </div>
     </main>
   );
 }
