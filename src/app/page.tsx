@@ -91,20 +91,20 @@ export default function Page({}: Props) {
         <List className="w-full">
           <Typography variant="h4">Stocks</Typography>
           {tickers.map((item: StockWeight, tickerIndex) => (
-            <ListItem className="flex gap-4" key={tickerIndex}>
+            <ListItem className="flex items-center gap-4" key={tickerIndex}>
               <TextField
                 className="w-48"
                 id="ticker"
                 label="Ticker"
                 variant="outlined"
                 error={!tickerIsValid(item.ticker)}
-                helperText="Invalid ticker"
+                helperText={!tickerIsValid ? "Invalid ticker" : " "}
                 value={item.ticker}
                 onChange={(e) =>
                   setTickers(
                     tickers.map((item: StockWeight, index) =>
                       index === tickerIndex
-                        ? { ...item, ticker: e.target.value }
+                        ? { ...item, ticker: e.target.value.toUpperCase() }
                         : item
                     )
                   )
@@ -143,6 +143,7 @@ export default function Page({}: Props) {
         </List>
         <Button
           variant="contained"
+          className="bg-orange-300"
           onClick={() =>
             setTickers([...tickers, { ticker: null, weight: null }])
           }
@@ -150,7 +151,12 @@ export default function Page({}: Props) {
           Add Stock
         </Button>
       </form>
-      <Link href={`/dashboard/${urlQuery}`}>View Dashboard</Link>
+      <Link
+        className="bg-orange-700 text-white p-4 rounded-lg text-center text-xl no-underline"
+        href={`/dashboard/${urlQuery}`}
+      >
+        ANALYZE PERFORMANCE
+      </Link>
     </div>
   );
 }

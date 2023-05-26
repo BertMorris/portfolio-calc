@@ -175,7 +175,7 @@ export default async function page({ params }: Props) {
   }));
 
   return (
-    <main className="bg-white">
+    <main className="w-[1200px] bg-white">
       <div className="h-56 flex justify-evenly items-center">
         <PieChart data={queryParams.stocks} />
         <BarChart

@@ -25,7 +25,7 @@ export default function PieChart({ data }: Props) {
   }));
   return (
     <div className="h-full w-1/3">
-      <h4>Breakdown</h4>
+      <h4>Portfolio Breakdown</h4>
       <ResponsivePie
         data={portfolioWeights}
         margin={{ top: 10, right: 20, bottom: 10, left: 20 }}
