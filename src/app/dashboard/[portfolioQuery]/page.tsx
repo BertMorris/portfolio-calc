@@ -1,8 +1,5 @@
-import { colors } from "@mui/material";
-import { timePickerToolbarClasses } from "@mui/x-date-pickers";
 import React from "react";
-import { StringLiteral } from "typescript";
-import Chart from "./Chart";
+import ChartTabs from "./ChartTabs";
 
 type Props = {
   params: { portfolioQuery: any };
@@ -174,18 +171,10 @@ export default async function page({ params }: Props) {
           strategies ie yearly, quarterly
         </li>
       </ul>
-      <h3>URL query: {JSON.stringify(queryParams)}</h3>
-      <h3>Key: {accessKey}</h3>
-      <h3>Symbols: {symbols}</h3>
-      <h3>DateFrom: {dateFrom}</h3>
-      <p>Data: {JSON.stringify(stockChartData)}</p>
-      <p>Test agg: {JSON.stringify(portfolioChartData)}</p>
-      <div className="h-96">
-        <Chart data={stockChartData} />
-      </div>
-      <div className="h-96">
-        <Chart data={portfolioChartData} />
-      </div>
+      <ChartTabs
+        portfolioChartData={portfolioChartData}
+        stockChartData={stockChartData}
+      />
     </main>
   );
 }
