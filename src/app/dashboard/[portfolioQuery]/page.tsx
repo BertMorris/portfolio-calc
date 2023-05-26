@@ -59,14 +59,14 @@ export default async function page({ params }: Props) {
   // fetch stock data from api
   const stockData = await fetchStockData(accessKey!, symbols, dateFrom);
   // save initial values
-  const getinitialValues = () => {
+  const getInitialStockValues = () => {
     let values: InitialValues = {};
-    console.log(queryParams.stocks.length);
-    console.log(
-      `sliced for init values: ${JSON.stringify(
-        stockData.slice(0, queryParams.stocks.length)
-      )}`
-    );
+    // console.log(queryParams.stocks.length);
+    // console.log(
+    //   `sliced for init values: ${JSON.stringify(
+    //     stockData.slice(0, queryParams.stocks.length)
+    //   )}`
+    // );
     stockData
       .slice(0, queryParams.stocks.length)
       .forEach((dataRecord: StockDataRecord) => {
@@ -74,9 +74,21 @@ export default async function page({ params }: Props) {
       });
     return values;
   };
-  const initialValues = getinitialValues();
-  console.log(`iniitalValues: ${JSON.stringify(initialValues)}`);
+  const initialStockValues = getInitialStockValues();
+  // console.log(`iniitalValues: ${JSON.stringify(initialStockValues)}`);
+  // get initial investment values
+  const getInitialInvestmentValues = () => {
+    let values: InitialValues = {};
+    queryParams.stocks.forEach((stock: Stock) => {
+      values[stock.ticker] = Number(
+        ((queryParams.initialBalance * stock.weight) / 100).toFixed(2)
+      );
+    });
 
+    return values;
+  };
+  const initialInvestmentValues = getInitialInvestmentValues();
+  console.log(JSON.stringify(initialInvestmentValues));
   // TRANSFORMING DATA //
   // desired format
   // [
@@ -92,38 +104,64 @@ export default async function page({ params }: Props) {
   //   }
   // ]
   // first create array of ticker objects
-  let chartData: ChartData[] = queryParams.stocks.map((item: Stock) => ({
+  let stockChartData: ChartData[] = queryParams.stocks.map((item: Stock) => ({
     id: item.ticker,
     data: [],
   }));
-  console.log(chartData);
+  // console.log(chartData);
   // record ticker index to prevent having to find index each record
   const getChartDataIndices = () => {
     let indices: TickerIndices = {};
-    chartData.forEach((stock: ChartData) => {
-      indices[stock.id] = chartData.findIndex(
+    stockChartData.forEach((stock: ChartData) => {
+      indices[stock.id] = stockChartData.findIndex(
         (element: ChartData) => element.id === stock.id
       );
     });
     return indices;
   };
   const chartDataIndices = getChartDataIndices();
-  console.log(chartDataIndices);
-  console.log(`stockData: ${JSON.stringify(stockData)}`);
+  // console.log(chartDataIndices);
+  // console.log(`stockData: ${JSON.stringify(stockData)}`);
   // push date and adj close for each record to corresponding ticker in chartData
   stockData.forEach((record: StockDataRecord) => {
-    chartData[chartDataIndices[record.symbol]].data.push({
+    stockChartData[chartDataIndices[record.symbol]].data.push({
       x: new Date(record.date).toLocaleDateString(),
       y:
         Number(
-          (record.adj_close / initialValues[record.symbol] - 1).toFixed(2)
+          (record.adj_close / initialStockValues[record.symbol] - 1).toFixed(4)
         ) * 100,
     });
+  });
+  // get total portfolio data
+  let portfolioChartData: ChartData[] = [
+    {
+      id: "Market Value",
+      data: stockChartData[0].data.map((item) => ({
+        x: item.x,
+        y: Number(
+          (
+            (item.y / 100 + 1) *
+            initialInvestmentValues[stockChartData[0].id]
+          ).toFixed(2)
+        ),
+      })),
+    },
+  ];
+
+  stockChartData.slice(1).forEach((stock: ChartData) => {
+    for (let i = 0; i < stock.data.length; i++) {
+      portfolioChartData[0].data[i].y += Number(
+        (
+          (stock.data[i].y / 100 + 1) *
+          initialInvestmentValues[stock.id]
+        ).toFixed(2)
+      );
+    }
   });
 
   return (
     <main>
-      <h1>This page will contain the bashboard</h1>
+      <h1>This page will contain the dashboard</h1>
       <h2>The dashboard will present the follwing:</h2>
       <ul>
         <li>Portfolio balance beginning with start date to current</li>
@@ -140,9 +178,13 @@ export default async function page({ params }: Props) {
       <h3>Key: {accessKey}</h3>
       <h3>Symbols: {symbols}</h3>
       <h3>DateFrom: {dateFrom}</h3>
-      <p>Data: {JSON.stringify(chartData)}</p>
+      <p>Data: {JSON.stringify(stockChartData)}</p>
+      <p>Test agg: {JSON.stringify(portfolioChartData)}</p>
       <div className="h-96">
-        <Chart data={chartData} />
+        <Chart data={stockChartData} />
+      </div>
+      <div className="h-96">
+        <Chart data={portfolioChartData} />
       </div>
     </main>
   );
