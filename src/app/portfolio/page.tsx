@@ -59,7 +59,7 @@ export default function Page({}: Props) {
   }, [date, initialBalance, tickers]);
 
   return (
-    <div className="max-w-lg p-8 border-2 border-black border-solid flex flex-col gap-4">
+    <div className="max-w-lg p-8 flex flex-col gap-4 bg-white">
       <Typography className="" variant="h4">
         Portfolio Builder
       </Typography>
