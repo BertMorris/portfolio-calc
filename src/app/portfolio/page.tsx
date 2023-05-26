@@ -9,6 +9,7 @@ import {
   ListItem,
   OutlinedInput,
   TextField,
+  Typography,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -58,36 +59,41 @@ export default function Page({}: Props) {
   }, [date, initialBalance, tickers]);
 
   return (
-    <>
-      <h1>This page will be for porfolio details input</h1>
-      <p>
-        It will include inputs for start date, starting balance, stock choices
-        and their weighting
-      </p>
-      <form>
-        <FormControl sx={{ m: 1 }} variant="outlined">
-          <InputLabel htmlFor="filled-adornment-amount">
-            Starting Investment
-          </InputLabel>
-          <OutlinedInput
-            id="filled-adornment-amount"
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
+    <div className="max-w-lg p-8 border-2 border-black border-solid flex flex-col gap-4">
+      <Typography className="" variant="h4">
+        Portfolio Builder
+      </Typography>
+      <form className="flex flex-col gap-8 items-center w-full">
+        <div className="flex gap-4 items-center">
+          <TextField
+            label="Initial Investment"
+            id="initialInvestment"
+            sx={{ m: 1, width: "25ch" }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">$</InputAdornment>
+              ),
+            }}
             value={initialBalance}
             onChange={(e) => setInitialBalance(Number(e.target.value))}
             required
           />
-        </FormControl>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Investment Date"
-            value={date}
-            onChange={(newDate) => setDate(newDate)}
-          />
-        </LocalizationProvider>
-        <List>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              className="w-48"
+              label="Investment Date"
+              value={date}
+              onChange={(newDate) => setDate(newDate)}
+            />
+          </LocalizationProvider>
+        </div>
+
+        <List className="w-full">
+          <Typography variant="h4">Stocks</Typography>
           {tickers.map((item: StockWeight, tickerIndex) => (
-            <ListItem key={tickerIndex}>
+            <ListItem className="flex gap-4" key={tickerIndex}>
               <TextField
+                className="w-48"
                 id="ticker"
                 label="Ticker"
                 variant="outlined"
@@ -106,6 +112,7 @@ export default function Page({}: Props) {
                 required
               />
               <TextField
+                className="w-40"
                 type="number"
                 id="weight"
                 label="Weighting"
@@ -134,8 +141,6 @@ export default function Page({}: Props) {
             </ListItem>
           ))}
         </List>
-      </form>
-      {tickers.length < 5 ? (
         <Button
           variant="contained"
           onClick={() =>
@@ -144,10 +149,8 @@ export default function Page({}: Props) {
         >
           Add Stock
         </Button>
-      ) : (
-        <p>Maximum input reached</p>
-      )}
+      </form>
       <Link href={`/dashboard/${urlQuery}`}>View Dashboard</Link>
-    </>
+    </div>
   );
 }
