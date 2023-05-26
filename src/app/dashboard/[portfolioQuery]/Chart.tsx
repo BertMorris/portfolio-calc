@@ -27,7 +27,13 @@ export default function Chart({ data }: Props) {
     <ResponsiveLine
       data={data}
       margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-      xScale={{ type: "point" }}
+      xFormat="time:%m/%d/%Y"
+      xScale={{
+        type: "time",
+        format: "%m/%d/%Y",
+        precision: "day",
+        useUTC: false,
+      }}
       yScale={{
         type: "linear",
         min: "auto",
@@ -39,12 +45,18 @@ export default function Chart({ data }: Props) {
       axisTop={null}
       axisRight={null}
       axisBottom={{
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: "Date",
-        legendOffset: 36,
-        legendPosition: "middle",
+        format: "%b %d",
+        legend: "time scale",
+        legendOffset: -12,
+        tickValues: "every 2 weeks",
+
+        // tickValues: 5,
+        // tickSize: 5,
+        // tickPadding: 5,
+        // tickRotation: 0,
+        // legend: "Date",
+        // legendOffset: 36,
+        // legendPosition: "middle",
       }}
       axisLeft={{
         tickSize: 5,
