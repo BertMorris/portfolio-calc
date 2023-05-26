@@ -27,9 +27,9 @@ type StockWeight = {
 
 export default function Page({}: Props) {
   const [date, setDate] = useState<Date | null>(null);
-  const [amount, setAmount] = useState<number | null>(null);
+  const [initialBalance, setInitialBalance] = useState<number | null>(null);
   const [tickers, setTickers] = useState<StockWeight[]>([
-    { ticker: "testing", weight: 30 },
+    { ticker: "", weight: null },
   ]);
 
   // check if ticker input is valid
@@ -50,12 +50,12 @@ export default function Page({}: Props) {
   const urlQuery = useMemo(() => {
     const query = {
       startDate: date,
-      initialBalance: amount,
+      initialBalance: initialBalance,
       stocks: tickers,
     };
 
     return encodeURIComponent(JSON.stringify(query));
-  }, [date, amount, tickers]);
+  }, [date, initialBalance, tickers]);
 
   return (
     <>
@@ -72,8 +72,8 @@ export default function Page({}: Props) {
           <OutlinedInput
             id="filled-adornment-amount"
             startAdornment={<InputAdornment position="start">$</InputAdornment>}
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
+            value={initialBalance}
+            onChange={(e) => setInitialBalance(Number(e.target.value))}
             required
           />
         </FormControl>
@@ -111,7 +111,9 @@ export default function Page({}: Props) {
                 label="Weighting"
                 variant="outlined"
                 error={!weightIsValid(item.weight)}
-                helperText="Max 100%"
+                helperText={
+                  !weightIsValid(item.weight) ? "Max weighting is 100%" : " "
+                }
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">%</InputAdornment>
