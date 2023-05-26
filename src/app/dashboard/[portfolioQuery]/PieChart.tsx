@@ -20,14 +20,15 @@ type Props = {
 export default function PieChart({ data }: Props) {
   const portfolioWeights = data.map((item: Stock) => ({
     id: item.ticker,
+    label: item.ticker,
     value: item.weight,
   }));
   return (
-    <div className="h-48 w-1/3">
+    <div className="h-full w-1/3">
       <h4>Breakdown</h4>
       <ResponsivePie
         data={portfolioWeights}
-        margin={{ top: 10, right: 0, bottom: 10, left: 0 }}
+        margin={{ top: 10, right: 20, bottom: 10, left: 20 }}
         innerRadius={0.5}
         padAngle={0.7}
         cornerRadius={3}

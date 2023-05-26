@@ -52,7 +52,7 @@ export default function ChartTabs({
   };
 
   return (
-    <>
+    <div className="mt-20">
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={value} onChange={handleChange} aria-label="Chart tabs">
           <Tab label="Portfolio" />
@@ -69,6 +69,6 @@ export default function ChartTabs({
           <Chart data={stockChartData} />
         </div>
       </TabPanel>
-    </>
+    </div>
   );
 }

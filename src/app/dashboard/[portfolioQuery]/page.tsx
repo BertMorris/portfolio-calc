@@ -175,9 +175,8 @@ export default async function page({ params }: Props) {
   }));
 
   return (
-    <main>
-      <h1>Portfolio Performance</h1>
-      <div className="flex items-center">
+    <main className="bg-white">
+      <div className="h-56 flex justify-evenly items-center">
         <PieChart data={queryParams.stocks} />
         <BarChart
           stocksReturn={stocksReturn}

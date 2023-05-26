@@ -17,7 +17,14 @@ export default function RootLayout({
     <html lang="en">
       <body id="__next">
         <CssBaseline />
-        {children}
+        <div className="h-screen w-screen flex flex-col justify-center items-center bg-slate-100">
+          <div className="w-full max-w-screen-lg border-radius-xl">
+            <header className="bg-orange-400 border-radius-xl">
+              <h1 className="text-white p-8 m-0">Stock Portfolio Analyzer</h1>
+            </header>
+            <div>{children}</div>
+          </div>
+        </div>
       </body>
     </html>
   );

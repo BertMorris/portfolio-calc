@@ -26,7 +26,7 @@ export default function Chart({ data }: Props) {
   return (
     <ResponsiveLine
       data={data}
-      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+      margin={{ top: 50, right: 110, bottom: 50, left: 80 }}
       xFormat="time:%m/%d/%Y"
       xScale={{
         type: "time",
@@ -62,8 +62,8 @@ export default function Chart({ data }: Props) {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: "Price",
-        legendOffset: -40,
+        legend: "Portfolio Market Value ($)",
+        legendOffset: -60,
         legendPosition: "middle",
       }}
       pointSize={10}

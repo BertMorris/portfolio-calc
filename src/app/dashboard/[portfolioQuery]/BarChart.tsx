@@ -21,14 +21,14 @@ type Props = {
 export default function BarChart({ stocksReturn, totalReturn }: Props) {
   const data = [...stocksReturn, { id: "Total", value: totalReturn }];
   return (
-    <div className="h-64  w-1/3">
-      <h4>Returns</h4>
+    <div className="h-full  w-1/3">
+      <h4>Percentage Returns</h4>
       <ResponsiveBar
         data={data}
         // keys={["hot dog", "burger", "sandwich", "kebab", "fries", "donut"]}
         layout="horizontal"
         indexBy="id"
-        margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+        margin={{ top: 50, right: 0, bottom: 50, left: 60 }}
         padding={0.3}
         valueScale={{ type: "linear" }}
         indexScale={{ type: "band", round: true }}
@@ -85,9 +85,9 @@ export default function BarChart({ stocksReturn, totalReturn }: Props) {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: "Percent Return",
-          legendPosition: "middle",
-          legendOffset: -40,
+          //   legend: "Percent Return",
+          //   legendPosition: "middle",
+          //   legendOffset: -40,
         }}
         labelSkipWidth={12}
         labelSkipHeight={12}
