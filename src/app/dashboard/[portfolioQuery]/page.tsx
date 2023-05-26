@@ -1,8 +1,12 @@
 import React from "react";
 
-type Props = {};
+type Props = {
+  params: { portfolioQuery: string };
+};
 
-export default function page({}: Props) {
+export default function page({ params }: Props) {
+  const query = decodeURIComponent(params.portfolioQuery);
+
   return (
     <main>
       <h1>This page will contain the bashboard</h1>
@@ -18,6 +22,7 @@ export default function page({}: Props) {
           strategies ie yearly, quarterly
         </li>
       </ul>
+      <h3>URL query: {query}</h3>
     </main>
   );
 }

@@ -2,7 +2,6 @@
 
 import {
   Button,
-  FilledInput,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -13,7 +12,8 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import React, { useState } from "react";
+import Link from "next/link";
+import React, { useMemo, useState } from "react";
 
 type Props = {};
 
@@ -25,7 +25,7 @@ type StockWeight = {
   weight: Weight;
 };
 
-export default function page({}: Props) {
+export default function Page({}: Props) {
   const [date, setDate] = useState<Date | null>(null);
   const [amount, setAmount] = useState<number | null>(null);
   const [tickers, setTickers] = useState<StockWeight[]>([
@@ -46,8 +46,19 @@ export default function page({}: Props) {
     } else return true;
   }
 
+  // url param string
+  const urlQuery = useMemo(() => {
+    const query = {
+      startDate: date,
+      initialBalance: amount,
+      stocks: tickers,
+    };
+
+    return encodeURIComponent(JSON.stringify(query));
+  }, [date, amount, tickers]);
+
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <>
       <h1>This page will be for porfolio details input</h1>
       <p>
         It will include inputs for start date, starting balance, stock choices
@@ -66,11 +77,13 @@ export default function page({}: Props) {
             required
           />
         </FormControl>
-        <DatePicker
-          label="Investment Date"
-          value={date}
-          onChange={(newDate) => setDate(newDate)}
-        />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="Investment Date"
+            value={date}
+            onChange={(newDate) => setDate(newDate)}
+          />
+        </LocalizationProvider>
         <List>
           {tickers.map((item: StockWeight, tickerIndex) => (
             <ListItem key={tickerIndex}>
@@ -132,6 +145,7 @@ export default function page({}: Props) {
       ) : (
         <p>Maximum input reached</p>
       )}
-    </LocalizationProvider>
+      <Link href={`/dashboard/${urlQuery}`}>View Dashboard</Link>
+    </>
   );
 }
