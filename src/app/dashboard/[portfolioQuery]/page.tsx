@@ -1,5 +1,7 @@
 import React from "react";
 import ChartTabs from "./ChartTabs";
+import PieChart from "./PieChart";
+import BarChart from "./BarChart";
 
 type Props = {
   params: { portfolioQuery: any };
@@ -85,7 +87,7 @@ export default async function page({ params }: Props) {
     return values;
   };
   const initialInvestmentValues = getInitialInvestmentValues();
-  console.log(JSON.stringify(initialInvestmentValues));
+  // console.log(JSON.stringify(initialInvestmentValues));
   // TRANSFORMING DATA //
   // desired format
   // [
@@ -156,21 +158,33 @@ export default async function page({ params }: Props) {
     }
   });
 
+  const totalReturn = Number(
+    (
+      portfolioChartData[0].data.slice(-1)[0].y -
+      portfolioChartData[0].data[0].y
+    ).toFixed(2)
+  );
+
+  const totalReturnPercent = Number(
+    ((totalReturn / queryParams.initialBalance) * 100).toFixed(2)
+  );
+
+  const stocksReturn = stockChartData.map((stock: ChartData) => ({
+    id: stock.id,
+    value: Number((stock.data.slice(-1)[0].y - stock.data[0].y).toFixed(2)),
+  }));
+
   return (
     <main>
-      <h1>This page will contain the dashboard</h1>
-      <h2>The dashboard will present the follwing:</h2>
-      <ul>
-        <li>Portfolio balance beginning with start date to current</li>
-        <li>
-          Allow users to compare their portfolio performance against the major
-          indices and potentially other popular funds
-        </li>
-        <li>
-          Maybe allow users to compare their portfolio against other rebalancing
-          strategies ie yearly, quarterly
-        </li>
-      </ul>
+      <h1>Portfolio Performance</h1>
+      <div className="flex items-center">
+        <PieChart data={queryParams.stocks} />
+        <BarChart
+          stocksReturn={stocksReturn}
+          totalReturn={totalReturnPercent}
+        />
+      </div>
+
       <ChartTabs
         portfolioChartData={portfolioChartData}
         stockChartData={stockChartData}
