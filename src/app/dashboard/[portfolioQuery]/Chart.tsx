@@ -9,7 +9,7 @@ const ResponsiveLine = dynamic(
 );
 
 type ChartDataRecord = {
-  x: Date;
+  x: string;
   y: number;
 };
 
@@ -32,7 +32,7 @@ export default function Chart({ data }: Props) {
         type: "linear",
         min: "auto",
         max: "auto",
-        stacked: true,
+        stacked: false,
         reverse: false,
       }}
       yFormat=" >-.2f"
@@ -42,7 +42,7 @@ export default function Chart({ data }: Props) {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: "transportation",
+        legend: "Date",
         legendOffset: 36,
         legendPosition: "middle",
       }}
@@ -50,7 +50,7 @@ export default function Chart({ data }: Props) {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: "count",
+        legend: "Price",
         legendOffset: -40,
         legendPosition: "middle",
       }}

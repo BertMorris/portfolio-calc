@@ -26,7 +26,7 @@ type StockDataRecord = {
 };
 
 type ChartDataRecord = {
-  x: Date;
+  x: string;
   y: number;
 };
 
@@ -36,6 +36,10 @@ type ChartData = {
 };
 
 type TickerIndices = {
+  [key: string]: number;
+};
+
+type InitialValues = {
   [key: string]: number;
 };
 
@@ -54,6 +58,25 @@ export default async function page({ params }: Props) {
   const dateFrom = queryParams.startDate.slice(0, 10);
   // fetch stock data from api
   const stockData = await fetchStockData(accessKey!, symbols, dateFrom);
+  // save initial values
+  const getinitialValues = () => {
+    let values: InitialValues = {};
+    console.log(queryParams.stocks.length);
+    console.log(
+      `sliced for init values: ${JSON.stringify(
+        stockData.slice(0, queryParams.stocks.length)
+      )}`
+    );
+    stockData
+      .slice(0, queryParams.stocks.length)
+      .forEach((dataRecord: StockDataRecord) => {
+        values[dataRecord.symbol] = dataRecord.adj_close;
+      });
+    return values;
+  };
+  const initialValues = getinitialValues();
+  console.log(`iniitalValues: ${JSON.stringify(initialValues)}`);
+
   // TRANSFORMING DATA //
   // desired format
   // [
@@ -86,11 +109,15 @@ export default async function page({ params }: Props) {
   };
   const chartDataIndices = getChartDataIndices();
   console.log(chartDataIndices);
+  console.log(`stockData: ${JSON.stringify(stockData)}`);
   // push date and adj close for each record to corresponding ticker in chartData
   stockData.forEach((record: StockDataRecord) => {
     chartData[chartDataIndices[record.symbol]].data.push({
-      x: record.date,
-      y: record.adj_close,
+      x: new Date(record.date).toLocaleDateString(),
+      y:
+        Number(
+          (record.adj_close / initialValues[record.symbol] - 1).toFixed(2)
+        ) * 100,
     });
   });
 
