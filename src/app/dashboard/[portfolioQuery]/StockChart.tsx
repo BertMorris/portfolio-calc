@@ -22,7 +22,7 @@ type Props = {
   data: ChartData[];
 };
 
-export default function Chart({ data }: Props) {
+export default function StockChart({ data }: Props) {
   return (
     <ResponsiveLine
       data={data}
@@ -62,7 +62,7 @@ export default function Chart({ data }: Props) {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: "Market Value ($)",
+        legend: "Change Since Purchase (%)",
         legendOffset: 60,
         legendPosition: "middle",
       }}

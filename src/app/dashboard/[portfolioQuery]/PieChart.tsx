@@ -19,7 +19,7 @@ type Props = {
 
 export default function PieChart({ data }: Props) {
   const portfolioWeights = data.map((item: Stock) => ({
-    id: item.ticker,
+    id: item.ticker.split(" ")[0],
     label: item.ticker,
     value: item.weight,
   }));
