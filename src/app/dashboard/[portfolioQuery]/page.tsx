@@ -51,14 +51,14 @@ export default async function page({ params }: Props) {
   const accessKey = process.env.MARKET_STACK_KEY;
   // get string of symbols
   const symbols = queryParams.stocks
-    .map((item: Stock) => item.ticker)
+    .map((item: Stock) => item.ticker.split(" ")[0])
     .join(",");
   // format date
   const dateFrom = queryParams.startDate.slice(0, 10);
   // fetch stock data from api
   const stockData = await fetchStockData(accessKey!, symbols, dateFrom);
   // save initial values
-  const getInitialStockValues = () => {
+  const getInitialStockValues = async () => {
     let values: InitialValues = {};
     // console.log(queryParams.stocks.length);
     // console.log(
@@ -66,20 +66,20 @@ export default async function page({ params }: Props) {
     //     stockData.slice(0, queryParams.stocks.length)
     //   )}`
     // );
-    stockData
+    await stockData
       .slice(0, queryParams.stocks.length)
       .forEach((dataRecord: StockDataRecord) => {
         values[dataRecord.symbol] = dataRecord.adj_close;
       });
     return values;
   };
-  const initialStockValues = getInitialStockValues();
+  const initialStockValues = await getInitialStockValues();
   // console.log(`iniitalValues: ${JSON.stringify(initialStockValues)}`);
   // get initial investment values
   const getInitialInvestmentValues = () => {
     let values: InitialValues = {};
     queryParams.stocks.forEach((stock: Stock) => {
-      values[stock.ticker] = Number(
+      values[stock.ticker.split(" ")[0]] = Number(
         ((queryParams.initialBalance * stock.weight) / 100).toFixed(2)
       );
     });
@@ -104,7 +104,7 @@ export default async function page({ params }: Props) {
   // ]
   // first create array of ticker objects
   let stockChartData: ChartData[] = queryParams.stocks.map((item: Stock) => ({
-    id: item.ticker,
+    id: item.ticker.split(" ")[0],
     data: [],
   }));
   // console.log(chartData);
@@ -122,7 +122,7 @@ export default async function page({ params }: Props) {
   // console.log(chartDataIndices);
   // console.log(`stockData: ${JSON.stringify(stockData)}`);
   // push date and adj close for each record to corresponding ticker in chartData
-  stockData.forEach((record: StockDataRecord) => {
+  await stockData.forEach((record: StockDataRecord) => {
     stockChartData[chartDataIndices[record.symbol]].data.push({
       x: new Date(record.date).toLocaleDateString(),
       y:
@@ -147,7 +147,7 @@ export default async function page({ params }: Props) {
     },
   ];
 
-  stockChartData.slice(1).forEach((stock: ChartData) => {
+  await stockChartData.slice(1).forEach((stock: ChartData) => {
     for (let i = 0; i < stock.data.length; i++) {
       portfolioChartData[0].data[i].y += Number(
         (

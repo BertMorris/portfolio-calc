@@ -1,6 +1,10 @@
 "use client";
 
+import { TickerSymbols } from "@/data";
+import { stockTickers } from "@/stockTickers";
 import {
+  Alert,
+  Autocomplete,
   Button,
   FormControl,
   InputAdornment,
@@ -32,6 +36,17 @@ export default function Page({}: Props) {
   const [tickers, setTickers] = useState<StockWeight[]>([
     { ticker: "", weight: null },
   ]);
+  // const [inputValue, setInputValue] = useState<string>("");
+
+  const tickerOptions = stockTickers;
+
+  const sumWeights = useMemo(() => {
+    const sum = tickers.reduce(
+      (acc, current) => acc + (current.weight ?? 0),
+      0
+    );
+    return sum;
+  }, [tickers]);
 
   // check if ticker input is valid
   function tickerIsValid(ticker: Ticker) {
@@ -58,6 +73,26 @@ export default function Page({}: Props) {
     return encodeURIComponent(JSON.stringify(query));
   }, [date, initialBalance, tickers]);
 
+  const buttonDisabled = useMemo(() => {
+    if (!date) {
+      return true;
+    }
+    if (!initialBalance || initialBalance < 0) {
+      return true;
+    }
+    if (sumWeights !== 100) {
+      return true;
+    }
+    if (
+      tickers.reduce(
+        (acc, current) => acc + (current.ticker?.length === 0 ? 1 : 0),
+        0
+      ) !== 0
+    ) {
+      return true;
+    } else return false;
+  }, [date, initialBalance, tickers, sumWeights]);
+
   return (
     <div className="max-w-lg p-8 flex flex-col gap-4 bg-white">
       <Typography className="" variant="h4">
@@ -68,6 +103,7 @@ export default function Page({}: Props) {
           <TextField
             label="Initial Investment"
             id="initialInvestment"
+            type="number"
             sx={{ m: 1, width: "25ch" }}
             InputProps={{
               startAdornment: (
@@ -84,6 +120,7 @@ export default function Page({}: Props) {
               label="Investment Date"
               value={date}
               onChange={(newDate) => setDate(newDate)}
+              disableFuture
             />
           </LocalizationProvider>
         </div>
@@ -92,7 +129,30 @@ export default function Page({}: Props) {
           <Typography variant="h4">Stocks</Typography>
           {tickers.map((item: StockWeight, tickerIndex) => (
             <ListItem className="flex items-center gap-4" key={tickerIndex}>
-              <TextField
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={tickerOptions}
+                value={item.ticker}
+                onChange={(e, newValue) =>
+                  setTickers(
+                    tickers.map((item: StockWeight, index) =>
+                      index === tickerIndex
+                        ? { ...item, ticker: newValue }
+                        : item
+                    )
+                  )
+                }
+                // inputValue={inputValue}
+                // onInputChange={(event, newInputValue) => {
+                //   setInputValue(newInputValue);
+                // }}
+                sx={{ width: 200 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Ticker" />
+                )}
+              />
+              {/* <TextField
                 className="w-48"
                 id="ticker"
                 label="Ticker"
@@ -110,7 +170,7 @@ export default function Page({}: Props) {
                   )
                 }
                 required
-              />
+              /> */}
               <TextField
                 className="w-40"
                 type="number"
@@ -151,12 +211,22 @@ export default function Page({}: Props) {
           Add Stock
         </Button>
       </form>
-      <Link
-        className="bg-orange-700 text-white p-4 rounded-lg text-center text-xl no-underline"
-        href={`/dashboard/${urlQuery}`}
-      >
-        ANALYZE PERFORMANCE
-      </Link>
+      {sumWeights !== 100 && (
+        <Alert severity="warning">Weightings must sum to 100%</Alert>
+      )}
+      {!buttonDisabled && (
+        <Link
+          // className="bg-orange-700 text-white p-4 rounded-lg text-center text-xl no-underline"
+          href={`/dashboard/${urlQuery}`}
+        >
+          <Button
+            className="text-white text-xl w-full bg-orange-600 p-4 rounded-lg text-center hover:bg-orange-500"
+            disabled={sumWeights !== 100}
+          >
+            ANALYZE PERFORMANCE
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }
