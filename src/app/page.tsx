@@ -1,6 +1,5 @@
 "use client";
 
-import { TickerSymbols } from "@/data";
 import { stockTickers } from "@/stockTickers";
 import {
   Alert,
@@ -73,6 +72,21 @@ export default function Page({}: Props) {
     return encodeURIComponent(JSON.stringify(query));
   }, [date, initialBalance, tickers]);
 
+  const isNullTicker = useMemo(() => {
+    if (tickers.length > 0) {
+      console.log("tickers.length > 0");
+      for (let i = 0; i < tickers.length; i++) {
+        if (!tickers[i].ticker) {
+          console.log("no ticker");
+          return true;
+        } else if (tickers[i].ticker!.length < 1) {
+          console.log("ticker length 0");
+          return true;
+        }
+      }
+    } else return true;
+  }, [tickers]);
+
   const buttonDisabled = useMemo(() => {
     if (!date) {
       return true;
@@ -83,15 +97,10 @@ export default function Page({}: Props) {
     if (sumWeights !== 100) {
       return true;
     }
-    if (
-      tickers.reduce(
-        (acc, current) => acc + (current.ticker?.length === 0 ? 1 : 0),
-        0
-      ) !== 0
-    ) {
+    if (isNullTicker) {
       return true;
     } else return false;
-  }, [date, initialBalance, tickers, sumWeights]);
+  }, [date, initialBalance, sumWeights, isNullTicker]);
 
   return (
     <div className="max-w-lg p-8 flex flex-col gap-4 bg-white">
@@ -149,7 +158,7 @@ export default function Page({}: Props) {
                 // }}
                 sx={{ width: 200 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Ticker" />
+                  <TextField {...params} label="Ticker" helperText=" " />
                 )}
               />
               {/* <TextField
@@ -172,7 +181,7 @@ export default function Page({}: Props) {
                 required
               /> */}
               <TextField
-                className="w-40"
+                className="w-44 h-min"
                 type="number"
                 id="weight"
                 label="Weighting"
@@ -198,6 +207,18 @@ export default function Page({}: Props) {
                 }
                 required
               />
+              <Button
+                className="bg-orange-600 text-white p-2 mb-6"
+                onClick={() =>
+                  setTickers(
+                    tickers
+                      .slice(0, tickerIndex)
+                      .concat(tickers.slice(tickerIndex + 1))
+                  )
+                }
+              >
+                Del
+              </Button>
             </ListItem>
           ))}
         </List>
@@ -211,6 +232,11 @@ export default function Page({}: Props) {
           Add Stock
         </Button>
       </form>
+      {!initialBalance && (
+        <Alert severity="warning">Initial Balance Required</Alert>
+      )}
+      {!date && <Alert severity="warning">Date Required</Alert>}
+      {isNullTicker && <Alert severity="warning">Please Select a Ticker</Alert>}
       {sumWeights !== 100 && (
         <Alert severity="warning">Weightings must sum to 100%</Alert>
       )}

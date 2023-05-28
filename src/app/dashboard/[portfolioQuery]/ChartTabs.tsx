@@ -3,6 +3,7 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import React, { useState } from "react";
 import Chart from "./Chart";
+import StockChart from "./StockChart";
 
 type ChartDataRecord = {
   x: string;
@@ -66,7 +67,7 @@ export default function ChartTabs({
       </TabPanel>
       <TabPanel value={value} index={1}>
         <div className="h-96">
-          <Chart data={stockChartData} />
+          <StockChart data={stockChartData} />
         </div>
       </TabPanel>
     </div>
